@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPG Kampus Tawau - MPU6122 Grammar Test</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .no-select { user-select: none; -webkit-user-select: none; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col no-select">
+
+    <!-- TOP HEADER NAVBAR -->
+    <header class="bg-indigo-900 text-white shadow-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white p-1.5 rounded-lg shadow">
+                    <i class="fa-solid fa-graduation-cap text-indigo-900 text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-base sm:text-lg leading-tight">IPG KAMPUS TAWAU</h1>
+                    <p class="text-xs text-indigo-200">MPU6122 English Language Proficiency</p>
+                </div>
+            </div>
+            
+            <!-- View Mode Switcher -->
+            <div class="flex items-center space-x-2">
+                <button id="btnStudentView" onclick="switchView('student')" class="px-3 py-1.5 text-xs font-semibold rounded-md bg-indigo-700 text-white transition">
+                    <i class="fa-solid fa-user-graduate mr-1"></i> Student Portal
+                </button>
+                <button id="btnLecturerView" onclick="openLecturerAuthModal()" class="px-3 py-1.5 text-xs font-semibold rounded-md bg-indigo-950 text-indigo-200 hover:bg-indigo-800 transition">
+                    <i class="fa-solid fa-user-tie mr-1"></i> Lecturer Dashboard
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toastContainer" class="fixed top-16 right-4 z-50 space-y-2 pointer-events-none"></div>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-1 max-w-5xl w-full mx-auto p-4 sm:p-6">
+
+        <!-- STUDENT PORTAL SECTION -->
+        <section id="studentPortal" class="space-y-6">
+
+            <!-- 1. REGISTRATION CARD -->
+            <div id="registrationCard" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8">
+                <div class="max-w-xl mx-auto text-center space-y-3 mb-8">
+                    <span class="bg-indigo-100 text-indigo-800 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Official Assessment</span>
+                    <h2 class="text-2xl font-bold text-slate-900">Grammar Online Test</h2>
+                    <p class="text-slate-600 text-sm">Please register your details carefully. You have <strong>45 minutes</strong> to complete all 30 questions once you click "Begin Exam".</p>
+                </div>
+
+                <form onsubmit="handleStartExam(event)" class="max-w-lg mx-auto space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Full Name</label>
+                        <input type="text" id="studentName" required placeholder="e.g. Nurul Aiman Binti Ahmad" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Matric / IC Number</label>
+                        <input type="text" id="studentId" required placeholder="e.g. P2026123456" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Assigned Lecturer</label>
+                            <select id="studentLecturer" required class="w-full px-3 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm bg-white">
+                                <option value="" disabled selected>Select Lecturer</option>
+                                <option value="Mr Abdul Aziz Arsyad">Mr Abdul Aziz Arsyad</option>
+                                <option value="Mr Shahshi Davien Thomas">Mr Shahshi Davien Thomas</option>
+                                <option value="Madam Siti Norfauziana Mohd Sah">Madam Siti Norfauziana Mohd Sah</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Class Unit</label>
+                            <select id="studentClass" required class="w-full px-3 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm bg-white">
+                                <option value="" disabled selected>Select Class</option>
+                                <option value="BM1">BM1</option><option value="BM2">BM2</option><option value="BM3">BM3</option>
+                                <option value="BM4">BM4</option><option value="BM5">BM5</option><option value="BM6">BM6</option>
+                                <option value="PAI1">PAI1</option><option value="PAI2">PAI2</option>
+                                <option value="BNK1">BNK1</option><option value="BNK2">BNK2</option>
+                                <option value="PAKK1">PAKK1</option><option value="PAKK2">PAKK2</option><option value="PAKK3">PAKK3</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="pt-4">
+                        <button type="submit" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-lg shadow-indigo-200 transition flex items-center justify-center space-x-2">
+                            <span>Begin Exam Now</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 2. LIVE QUIZ INTERFACE CONTAINER -->
+            <div id="quizContainer" class="hidden space-y-6">
+                <!-- STATUS & TIMER HEADER -->
+                <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center space-x-3 w-full sm:w-auto">
+                        <div class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-sm">
+                            <i class="fa-solid fa-user-check"></i>
+                        </div>
+                        <div>
+                            <h3 id="quizStudentName" class="font-bold text-slate-900 text-sm sm:text-base leading-tight">Student Name</h3>
+                            <p class="text-xs text-slate-500"><span id="quizStudentClass">Class</span> • <span id="quizStudentLecturer">Lecturer</span></p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-4 w-full sm:w-auto justify-end">
+                        <div id="tabWarningBanner" class="hidden bg-rose-50 border border-rose-200 text-rose-700 text-xs px-3 py-1.5 rounded-lg flex items-center space-x-1 font-semibold">
+                            <i class="fa-solid fa-circle-exclamation text-rose-600"></i>
+                            <span>Tab Switched: <span id="tabSwitchCount" class="font-bold">0</span>x</span>
+                        </div>
+
+                        <div class="bg-slate-900 text-white px-4 py-2 rounded-xl flex items-center space-x-2 font-mono text-base font-bold shadow-inner">
+                            <i class="fa-regular fa-clock text-amber-400"></i>
+                            <span id="timerDisplay">45:00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- QUESTION DOTS NAVIGATOR -->
+                <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200 space-y-3">
+                    <div class="flex items-center justify-between text-xs font-semibold text-slate-600 border-b border-slate-100 pb-2">
+                        <span>Question Progress</span>
+                        <div class="flex items-center space-x-3">
+                            <span class="flex items-center space-x-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> <span>Answered</span></span>
+                            <span class="flex items-center space-x-1"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span> <span>Unanswered</span></span>
+                        </div>
+                    </div>
+                    <div id="questionDotsContainer" class="flex flex-wrap gap-2 justify-start items-center"></div>
+                </div>
+
+                <!-- QUESTION DISPLAY CARD -->
+                <div class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
+                    <div class="bg-slate-100 text-slate-700 text-xs font-semibold px-4 py-2 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                        <span id="sectionTitleDisplay" class="text-indigo-900 font-bold">SECTION A</span>
+                        <span id="partInstructionsDisplay" class="text-slate-600">Instructions</span>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="text-xs font-bold text-indigo-600 tracking-wider uppercase">
+                            Question <span id="currentQNum">1</span> of <span id="totalQNum">30</span>
+                        </div>
+                        <h3 id="questionPrompt" class="text-base sm:text-lg font-semibold text-slate-900 leading-relaxed">
+                            Loading question prompt...
+                        </h3>
+                    </div>
+
+                    <div id="answerOptionsContainer" class="space-y-3 pt-2"></div>
+
+                    <div class="flex items-center justify-between pt-6 border-t border-slate-100">
+                        <button id="btnPrevQ" onclick="navigateQuestion(-1)" class="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 font-semibold text-sm hover:bg-slate-100 transition flex items-center space-x-1">
+                            <i class="fa-solid fa-chevron-left"></i>
+                            <span>Previous</span>
+                        </button>
+                        <button id="btnNextQ" onclick="navigateQuestion(1)" class="px-5 py-2 rounded-lg bg-indigo-600 text-white font-semibold text-sm hover:bg-indigo-700 transition flex items-center space-x-1">
+                            <span>Next</span>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SUBMISSION BAR -->
+                <div class="bg-slate-900 text-white p-4 rounded-xl shadow-md flex items-center justify-between">
+                    <div class="text-xs text-slate-400">
+                        Finished all questions? Make sure to double check before submitting.
+                    </div>
+                    <button onclick="openConfirmModal()" class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm rounded-lg shadow transition flex items-center space-x-2">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>Submit Final Answers</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 3. SUBMITTED CONFIRMATION CARD -->
+            <div id="submittedCard" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center space-y-6">
+                <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div class="space-y-2">
+                    <h2 class="text-2xl font-bold text-slate-900">Quiz Submitted Successfully!</h2>
+                    <p class="text-slate-600 text-sm">Your test responses have been saved and sent to your lecturer.</p>
+                </div>
+
+                <div class="bg-slate-50 p-4 rounded-xl text-left max-w-md mx-auto space-y-2 text-xs text-slate-600 border border-slate-200">
+                    <div class="flex justify-between"><span>Student:</span> <strong id="summaryName" class="text-slate-900">Name</strong></div>
+                    <div class="flex justify-between"><span>Matric ID:</span> <strong id="summaryId" class="text-slate-900">ID</strong></div>
+                    <div class="flex justify-between"><span>Class & Lecturer:</span> <strong id="summaryMeta" class="text-slate-900">Class</strong></div>
+                    <div class="flex justify-between"><span>Submission Time:</span> <strong id="summaryTime" class="text-slate-900">Timestamp</strong></div>
+                </div>
+
+                <div class="text-xs text-slate-500 italic">
+                    You may now close this browser window.
+                </div>
+            </div>
+
+        </section>
+
+        <!-- LECTURER DASHBOARD SECTION -->
+        <section id="lecturerDashboard" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">Lecturer Control Center</h2>
+                    <p class="text-xs text-slate-500">Live submission monitoring & grade exports for 13 classes.</p>
+                </div>
+
+                <div class="flex items-center space-x-2">
+                    <button onclick="openSettingsModal()" class="px-3 py-2 bg-slate-100 text-slate-700 font-semibold text-xs rounded-lg hover:bg-slate-200 transition">
+                        <i class="fa-solid fa-link mr-1"></i> Google Sheet Link
+                    </button>
+                    <button onclick="exportToCSV()" class="px-4 py-2 bg-emerald-600 text-white font-semibold text-xs rounded-lg hover:bg-emerald-700 shadow transition">
+                        <i class="fa-solid fa-file-csv mr-1"></i> Export Results CSV
+                    </button>
+                    <button onclick="lockDashboard()" class="px-3 py-2 bg-rose-600 text-white font-semibold text-xs rounded-lg hover:bg-rose-700 transition">
+                        <i class="fa-solid fa-lock mr-1"></i> Lock Portal
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filters Bar -->
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Filter Lecturer</label>
+                    <select id="filterLecturer" onchange="renderSubmissionsTable()" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white">
+                        <option value="ALL">All Lecturers</option>
+                        <option value="Mr Abdul Aziz Arsyad">Mr Abdul Aziz Arsyad</option>
+                        <option value="Mr Shahshi Davien Thomas">Mr Shahshi Davien Thomas</option>
+                        <option value="Madam Siti Norfauziana Mohd Sah">Madam Siti Norfauziana Mohd Sah</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Filter Class Unit</label>
+                    <select id="filterClass" onchange="renderSubmissionsTable()" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white">
+                        <option value="ALL">All 13 Classes</option>
+                        <option value="BM1">BM1</option><option value="BM2">BM2</option><option value="BM3">BM3</option>
+                        <option value="BM4">BM4</option><option value="BM5">BM5</option><option value="BM6">BM6</option>
+                        <option value="PAI1">PAI1</option><option value="PAI2">PAI2</option>
+                        <option value="BNK1">BNK1</option><option value="BNK2">BNK2</option>
+                        <option value="PAKK1">PAKK1</option><option value="PAKK2">PAKK2</option><option value="PAKK3">PAKK3</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Search Student</label>
+                    <input type="text" id="filterSearch" oninput="renderSubmissionsTable()" placeholder="Name or ID..." class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs outline-none">
+                </div>
+            </div>
+
+            <!-- Overview Stats -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-xl border border-slate-200 text-center">
+                    <p class="text-xs text-slate-500 font-semibold uppercase">Submissions</p>
+                    <h3 id="statTotalSubmissions" class="text-2xl font-bold text-indigo-900">0</h3>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 text-center">
+                    <p class="text-xs text-slate-500 font-semibold uppercase">Class Average</p>
+                    <h3 id="statClassAverage" class="text-2xl font-bold text-indigo-900">0%</h3>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 text-center">
+                    <p class="text-xs text-slate-500 font-semibold uppercase">Pass Count (&ge;50%)</p>
+                    <h3 id="statPassed" class="text-2xl font-bold text-emerald-600">0</h3>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 text-center">
+                    <p class="text-xs text-slate-500 font-semibold uppercase">Tab Switch Alerts</p>
+                    <h3 id="statTabSwitches" class="text-2xl font-bold text-rose-600">0</h3>
+                </div>
+            </div>
+
+            <!-- Submissions Table -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 text-xs font-semibold uppercase border-b border-slate-200">
+                                <th class="p-4">Student</th>
+                                <th class="p-4">Class</th>
+                                <th class="p-4">Lecturer</th>
+                                <th class="p-4">Score</th>
+                                <th class="p-4">Warnings</th>
+                                <th class="p-4">Submitted At</th>
+                                <th class="p-4 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="submissionsTbody" class="divide-y divide-slate-100 text-xs"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL: LECTURER SECURITY VERIFICATION -->
+    <div id="lecturerAuthModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-200 space-y-4">
+            <div class="text-center space-y-2">
+                <div class="w-12 h-12 bg-indigo-100 text-indigo-900 rounded-full flex items-center justify-center mx-auto text-xl">
+                    <i class="fa-solid fa-user-lock"></i>
+                </div>
+                <h3 class="font-bold text-slate-900 text-lg">Lecturer Verification</h3>
+                <p class="text-xs text-slate-500">Please enter your authorized passcode to access student logs and results.</p>
+            </div>
+            <div>
+                <input type="password" id="lecturerPasscode" placeholder="Enter Security Passcode" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+            <div class="flex space-x-2">
+                <button onclick="closeLecturerAuthModal()" class="w-1/2 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-lg transition">Cancel</button>
+                <button onclick="verifyLecturerPasscode()" class="w-1/2 py-2.5 bg-indigo-900 hover:bg-indigo-800 text-white font-semibold text-xs rounded-lg transition">Unlock</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: STUDENT DETAILED LOG INSPECTOR -->
+    <div id="studentLogModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-3xl w-full p-6 shadow-xl border border-slate-200 space-y-4 max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-start border-b border-slate-100 pb-3">
+                <div>
+                    <h3 id="logModalStudentName" class="font-bold text-slate-900 text-base">Student Log Inspection</h3>
+                    <p id="logModalStudentMeta" class="text-xs text-slate-500">Details</p>
+                </div>
+                <button onclick="closeLogModal()" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="logModalContent" class="flex-1 overflow-y-auto space-y-3 pr-2 text-xs"></div>
+        </div>
+    </div>
+
+    <!-- MODAL: GOOGLE SHEET LINK CONFIGURATION -->
+    <div id="settingsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200 space-y-4">
+            <h3 class="font-bold text-slate-900 text-base">Google Sheet Web App Integration</h3>
+            <p class="text-xs text-slate-500">Paste your Google Apps Script Web App URL to receive live student submissions automatically.</p>
+            <input type="url" id="sheetWebhookUrl" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs">
+            <div class="flex justify-end space-x-2">
+                <button onclick="closeSettingsModal()" class="px-3 py-1.5 bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg">Cancel</button>
+                <button onclick="saveSettings()" class="px-4 py-1.5 bg-indigo-600 text-white text-xs font-semibold rounded-lg shadow">Save & Connect</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CONFIRM EXAM SUBMISSION -->
+    <div id="confirmSubmitModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-200 space-y-4 text-center">
+            <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto text-xl">
+                <i class="fa-solid fa-circle-question"></i>
+            </div>
+            <h3 class="font-bold text-slate-900 text-base">Submit Grammar Test?</h3>
+            <p class="text-xs text-slate-500">Once submitted, you cannot alter your responses anymore. Are you sure you are done?</p>
+            <div class="flex space-x-2">
+                <button onclick="closeConfirmModal()" class="w-1/2 py-2 bg-slate-100 text-slate-700 font-semibold text-xs rounded-lg">Return to Test</button>
+                <button onclick="executeFinalSubmission(false)" class="w-1/2 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow">Yes, Submit Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN JAVASCRIPT ENGINE -->
+    <script>
+        // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE SO ALL PHONES CAN SUBMIT AUTOMATICALLY
+        const DEFAULT_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwZEY0yw8wQo-KVBnkpFjTUt7dGZ2uycIh5VtUS2lvurwJ7G8DVjy7f2xYVh_HQ5Lmi/exec";
+
+        const questionBank = [
+            // SECTION A - Part I: MCQs (1-5)
+            { id: 1, sectionGroup: "A", sectionTitle: "SECTION A: PARTS OF SPEECH / WORD CLASSES", partTitle: "Part I: Multiple-Choice Questions (5 marks)", type: "mcq", prompt: "1. Neither the lecturer nor the students could identify _____ had submitted the assignment without a name.", options: ["whom", "whose", "who", "which"], correct: "who" },
+            { id: 2, sectionGroup: "A", sectionTitle: "SECTION A: PARTS OF SPEECH / WORD CLASSES", partTitle: "Part I: Multiple-Choice Questions (5 marks)", type: "mcq", prompt: "2. Each of the trainee teachers _____ responsible for preparing a lesson plan before the teaching practicum begins.", options: ["are", "is", "have been", "were"], correct: "is" },
+            { id: 3, sectionGroup: "A", sectionTitle: "SECTION A: PARTS OF SPEECH / WORD CLASSES", partTitle: "Part I: Multiple-Choice Questions (5 marks)", type: "mcq", prompt: "3. The students were encouraged to express their opinions, _____ their views differed from those of the lecturer.", options: ["even though", "provided that", "so that", "unless"], correct: "even though" },
+            { id: 4, sectionGroup: "A", sectionTitle: "SECTION A: PARTS OF SPEECH / WORD CLASSES", partTitle: "Part I: Multiple-Choice Questions (5 marks)", type: "mcq", prompt: "4. The trainee teachers were reminded that their lesson plans must be submitted _____ accordance with the institution's guidelines.", options: ["at", "on", "by", "in"], correct: "in" },
+            { id: 5, sectionGroup: "A", sectionTitle: "SECTION A: PARTS OF SPEECH / WORD CLASSES", partTitle: "Part I: Multiple-Choice Questions (5 marks)", type: "mcq", prompt: "5. \"_____! I nearly submitted the wrong version of my assignment,\" exclaimed the student after noticing the mistake just in time.", options: ["Alas", "Bravo", "Phew", "Ouch"], correct: "Phew" },
+
+            // SECTION A - Part II: Word Formation (6-12)
+            { id: 6, sectionGroup: "A", sectionTitle: "SECTION A: PARTS OF SPEECH / WORD CLASSES", partTitle: "Part II: Word Formation (7 marks)", type: "text", prompt: "6. The lecturer praised the students for their active _____ in the discussion. (participate)", correct: ["participation"] },
+            { id: 7, sectionGroup: "A", sectionTitle: "SECTION A: PARTS OF SPEECH / WORD CLASSES", partTitle: "Part II: Word Formation (7 marks)", type: "text", prompt: "7. The trainee teacher explained the activity _____ so that everyone understood the instructions. (clear)", correct: ["clearly"] },
+            { id: 8, sectionGroup: "A", sectionTitle: "SECTION A: PARTS OF SPEECH / WORD CLASSES", partTitle: "Part II: Word Formation (7 marks)", type: "text", prompt: "8. The children showed great _____ when they discovered how the experiment worked. (curious)", correct: ["curiosity"] },
+            { id: 9, sectionGroup: "A", sectionTitle: "SECTION A: PARTS OF SPEECH / WORD CLASSES", partTitle: "Part II: Word Formation (7 marks)", type: "text", prompt: "9. The pupils worked _____ to complete the group project. (cooperate)", correct: ["cooperatively", "together", "in cooperation"] },
+            { id: 10, sectionGroup: "A", sectionTitle: "SECTION A: PARTS OF SPEECH / WORD CLASSES", partTitle: "Part II: Word Formation (7 marks)", type: "text", prompt: "10. The lecturer provided a _____ explanation of the assessment requirements. (detail)", correct: ["detailed"] },
+            { id: 11, sectionGroup: "A", sectionTitle: "SECTION A: PARTS OF SPEECH / WORD CLASSES", partTitle: "Part II: Word Formation (7 marks)", type: "text", prompt: "11. The students demonstrated remarkable _____ when completing the challenging assignment. (patient)", correct: ["patience"] },
+            { id: 12, sectionGroup: "A", sectionTitle: "SECTION A: PARTS OF SPEECH / WORD CLASSES", partTitle: "Part II: Word Formation (7 marks)", type: "text", prompt: "12. The lecturer emphasised the _____ of effective communication in teaching. (important)", correct: ["importance"] },
+
+            // SECTION B - Part I: MCQs (13-18)
+            { id: 13, sectionGroup: "B", sectionTitle: "SECTION B: TENSES", partTitle: "Part I: Multiple-Choice Questions (6 marks)", type: "mcq", prompt: "13. Every morning, the trainee teacher _____ her lesson plan before entering the classroom.", options: ["reviews", "is reviewing", "has reviewed", "reviewed"], correct: "reviews" },
+            { id: 14, sectionGroup: "B", sectionTitle: "SECTION B: TENSES", partTitle: "Part I: Multiple-Choice Questions (6 marks)", type: "mcq", prompt: "14. Please lower your voice. The pupils _____ their listening assessment at the moment.", options: ["completed", "have completed", "are completing", "complete"], correct: "are completing" },
+            { id: 15, sectionGroup: "B", sectionTitle: "SECTION B: TENSES", partTitle: "Part I: Multiple-Choice Questions (6 marks)", type: "mcq", prompt: "15. The lecturer _____ the assessment criteria, so the students now understand what is expected.", options: ["explains", "has explained", "was explaining", "had explained"], correct: "has explained" },
+            { id: 16, sectionGroup: "B", sectionTitle: "SECTION B: TENSES", partTitle: "Part I: Multiple-Choice Questions (6 marks)", type: "mcq", prompt: "16. Last Friday, the lecturer _____ an additional tutorial to help students prepare for the examination.", options: ["conducted", "has conducted", "conducts", "had conducted"], correct: "conducted" },
+            { id: 17, sectionGroup: "B", sectionTitle: "SECTION B: TENSES", partTitle: "Part I: Multiple-Choice Questions (6 marks)", type: "mcq", prompt: "17. While the teacher _____ the story, one of the pupils raised his hand to ask a question.", options: ["reads", "has read", "was reading", "had read"], correct: "was reading" },
+            { id: 18, sectionGroup: "B", sectionTitle: "SECTION B: TENSES", partTitle: "Part I: Multiple-Choice Questions (6 marks)", type: "mcq", prompt: "18. By the time the supervisor arrived, the trainee teacher _____ the classroom activities.", options: ["prepares", "has prepared", "was preparing", "had prepared"], correct: "had prepared" },
+
+            // SECTION B - Part II: Verb Forms (19-24)
+            { id: 19, sectionGroup: "B", sectionTitle: "SECTION B: TENSES", partTitle: "Part II: Verb Forms (6 marks)", type: "text", prompt: "19. Sarah's eyes are red and swollen. She _____ for the past hour. (cry) [Use Present Perfect Progressive]", correct: ["has been crying"] },
+            { id: 20, sectionGroup: "B", sectionTitle: "SECTION B: TENSES", partTitle: "Part II: Verb Forms (6 marks)", type: "text", prompt: "20. When the headteacher visited the classroom at noon, the pupils _____ on their science project for three hours. (work) [Use Past Perfect Progressive]", correct: ["had been working"] },
+            { id: 21, sectionGroup: "B", sectionTitle: "SECTION B: TENSES", partTitle: "Part II: Verb Forms (6 marks)", type: "text", prompt: "21. The students have not received their results yet. The lecturer expects that they _____ the results next Monday. (receive) [Use Future Simple]", correct: ["will receive"] },
+            { id: 22, sectionGroup: "B", sectionTitle: "SECTION B: TENSES", partTitle: "Part II: Verb Forms (6 marks)", type: "text", prompt: "22. Please do not call me at 10 a.m. tomorrow because I _____ a workshop at that time. (attend) [Use Future Progressive]", correct: ["will be attending"] },
+            { id: 23, sectionGroup: "B", sectionTitle: "SECTION B: TENSES", partTitle: "Part II: Verb Forms (6 marks)", type: "text", prompt: "23. By the end of this semester, the students _____ all the required assignments. (complete) [Use Future Perfect]", correct: ["will have completed"] },
+            { id: 24, sectionGroup: "B", sectionTitle: "SECTION B: TENSES", partTitle: "Part II: Verb Forms (6 marks)", type: "text", prompt: "24. Next December will mark ten years since Mr Ahmad began teaching at this school. By then, he _____ here for ten years. (teach) [Use Future Perfect Progressive]", correct: ["will have been teaching"] },
+
+            // SECTION C - Part I: MCQs (25-27)
+            { id: 25, sectionGroup: "C", sectionTitle: "SECTION C: SENTENCE TYPES", partTitle: "Part I: Multiple-Choice Questions (3 marks)", type: "mcq", prompt: "25. Which of the following is a grammatically correct simple sentence?", options: ["The pupils completed their work, and they submitted it.", "Although the pupils completed their work, they forgot to submit it.", "The pupils who completed their work submitted it.", "The pupils completed their work before lunch."], correct: "The pupils completed their work before lunch." },
+            { id: 26, sectionGroup: "C", sectionTitle: "SECTION C: SENTENCE TYPES", partTitle: "Part I: Multiple-Choice Questions (3 marks)", type: "mcq", prompt: "26. Which of the following is a grammatically correct compound sentence?", options: ["Although the teacher explained the instructions, some pupils remained confused.", "The teacher explained the instructions, but some pupils remained confused.", "The teacher who explained the instructions noticed that some pupils were confused.", "The teacher explained the instructions before the pupils began their work."], correct: "The teacher explained the instructions, but some pupils remained confused." },
+            { id: 27, sectionGroup: "C", sectionTitle: "SECTION C: SENTENCE TYPES", partTitle: "Part I: Multiple-Choice Questions (3 marks)", type: "mcq", prompt: "27. Which of the following is a grammatically correct complex sentence?", options: ["The students revised their notes, and they completed the practice questions.", "The students revised their notes; they completed the practice questions.", "Because the students revised their notes, they felt more confident about the exam.", "The students revised their notes and completed the practice questions."], correct: "Because the students revised their notes, they felt more confident about the exam." },
+
+            // SECTION C - Part II: Sentence Construction (28-30)
+            { id: 28, sectionGroup: "C", sectionTitle: "SECTION C: SENTENCE TYPES", partTitle: "Part II: Sentence Construction (3 marks)", type: "text", prompt: "28. Combine into ONE simple sentence:\n\"The pupils listened attentively. The pupils took notes during the presentation.\"", correct: ["The pupils listened attentively and took notes during the presentation.", "Listening attentively, the pupils took notes during the presentation."] },
+            { id: 29, sectionGroup: "C", sectionTitle: "SECTION C: SENTENCE TYPES", partTitle: "Part II: Sentence Construction (3 marks)", type: "text", prompt: "29. Combine into ONE compound sentence using a coordinating conjunction:\n\"The teacher explained the instructions. Some pupils still needed assistance.\"", correct: ["The teacher explained the instructions, but some pupils still needed assistance.", "The teacher explained the instructions, yet some pupils still needed assistance."] },
+            { id: 30, sectionGroup: "C", sectionTitle: "SECTION C: SENTENCE TYPES", partTitle: "Part II: Sentence Construction (3 marks)", type: "text", prompt: "30. Combine into ONE complex sentence using a subordinating conjunction:\n\"The lesson was challenging. The pupils remained enthusiastic.\"", correct: ["Although the lesson was challenging, the pupils remained enthusiastic.", "Even though the lesson was challenging, the pupils remained enthusiastic.", "The pupils remained enthusiastic although the lesson was challenging."] }
+        ];
+
+        let currentStudent = null;
+        let randomizedQuestions = [];
+        let studentAnswers = {};
+        let currentQIndex = 0;
+        let timerInterval = null;
+        let timeRemainingSeconds = 45 * 60;
+        let tabSwitchCounter = 0;
+        let isLecturerAuthenticated = false;
+
+        window.onload = function() {
+            setupTabSwitchListener();
+            if (window.location.protocol === 'file:') {
+                console.warn("Running from file:// protocol. Push to GitHub Pages or use a local HTTP server for Google Sheet integration.");
+            }
+        };
+
+        function shuffleArray(arr) {
+            const array = [...arr];
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function setupTabSwitchListener() {
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden && currentStudent && !currentStudent.isSubmitted) {
+                    tabSwitchCounter++;
+                    saveSessionProgress();
+                    const banner = document.getElementById('tabWarningBanner');
+                    const countSpan = document.getElementById('tabSwitchCount');
+                    if (banner && countSpan) {
+                        banner.classList.remove('hidden');
+                        countSpan.innerText = tabSwitchCounter;
+                    }
+                }
+            });
+        }
+
+        function handleStartExam(e) {
+            if (e) e.preventDefault();
+
+            const name = document.getElementById('studentName').value.trim();
+            const id = document.getElementById('studentId').value.trim();
+            const lecturer = document.getElementById('studentLecturer').value;
+            const className = document.getElementById('studentClass').value;
+
+            if (!name || !id || !lecturer || !className) {
+                showToast("Please fill in all registration fields.", "error");
+                return;
+            }
+
+            const cleanId = id.toLowerCase().replace(/[^a-z0-9]/g, '');
+            const sessionKey = 'mpu6122_session_' + cleanId;
+            const existingSessionStr = localStorage.getItem(sessionKey);
+
+            if (existingSessionStr) {
+                try {
+                    const savedSession = JSON.parse(existingSessionStr);
+                    if (savedSession.isSubmitted) {
+                        showToast("This Matric ID has already submitted the test.", "error");
+                        document.getElementById('registrationCard').classList.add('hidden');
+                        document.getElementById('submittedCard').classList.remove('hidden');
+                        document.getElementById('summaryName').innerText = savedSession.currentStudent.name;
+                        document.getElementById('summaryId').innerText = savedSession.currentStudent.id;
+                        document.getElementById('summaryMeta').innerText = `${savedSession.currentStudent.className} • ${savedSession.currentStudent.lecturer}`;
+                        document.getElementById('summaryTime').innerText = savedSession.submittedAt || 'Already Submitted';
+                        return;
+                    }
+
+                    currentStudent = savedSession.currentStudent;
+                    randomizedQuestions = savedSession.randomizedQuestions;
+                    studentAnswers = savedSession.studentAnswers || {};
+                    tabSwitchCounter = savedSession.tabSwitchCounter || 0;
+
+                    const elapsedSecs = Math.floor((Date.now() - (savedSession.startTimeMs || Date.now())) / 1000);
+                    timeRemainingSeconds = Math.max(0, (45 * 60) - elapsedSecs);
+
+                    if (timeRemainingSeconds <= 0) {
+                        showToast("Your time expired. Submitting automatically.", "error");
+                        executeFinalSubmission(true);
+                        return;
+                    }
+
+                    showToast("Resuming your test session!", "success");
+                    document.getElementById('quizStudentName').innerText = currentStudent.name;
+                    document.getElementById('quizStudentClass').innerText = currentStudent.className;
+                    document.getElementById('quizStudentLecturer').innerText = currentStudent.lecturer;
+                    document.getElementById('totalQNum').innerText = randomizedQuestions.length;
+
+                    const warningBanner = document.getElementById('tabWarningBanner');
+                    if (warningBanner) {
+                        if (tabSwitchCounter > 0) {
+                            warningBanner.classList.remove('hidden');
+                            document.getElementById('tabSwitchCount').innerText = tabSwitchCounter;
+                        }
+                    }
+
+                    document.getElementById('registrationCard').classList.add('hidden');
+                    document.getElementById('quizContainer').classList.remove('hidden');
+
+                    startTimer(timeRemainingSeconds);
+                    renderQuestion();
+                    return;
+                } catch(err) {
+                    console.error("Error restoring session:", err);
+                }
+            }
+
+            currentStudent = {
+                name: name,
+                id: id,
+                lecturer: lecturer,
+                className: className,
+                isSubmitted: false,
+                startTimeMs: Date.now()
+            };
+
+            const subsectionOrder = [
+                { group: "A", part: "Part I: Multiple-Choice Questions (5 marks)" },
+                { group: "A", part: "Part II: Word Formation (7 marks)" },
+                { group: "B", part: "Part I: Multiple-Choice Questions (6 marks)" },
+                { group: "B", part: "Part II: Verb Forms (6 marks)" },
+                { group: "C", part: "Part I: Multiple-Choice Questions (3 marks)" },
+                { group: "C", part: "Part II: Sentence Construction (3 marks)" }
+            ];
+
+            randomizedQuestions = [];
+
+            subsectionOrder.forEach(sub => {
+                const subQuestions = questionBank.filter(q => q.sectionGroup === sub.group && q.partTitle === sub.part);
+                const shuffledSub = shuffleArray(subQuestions);
+                
+                shuffledSub.forEach(q => {
+                    const preparedQ = { ...q };
+                    if (preparedQ.type === 'mcq' && preparedQ.options) {
+                        preparedQ.shuffledOptions = shuffleArray(preparedQ.options);
+                    }
+                    randomizedQuestions.push(preparedQ);
+                });
+            });
+
+            studentAnswers = {};
+            currentQIndex = 0;
+            tabSwitchCounter = 0;
+
+            saveSessionProgress();
+
+            document.getElementById('quizStudentName').innerText = name;
+            document.getElementById('quizStudentClass').innerText = className;
+            document.getElementById('quizStudentLecturer').innerText = lecturer;
+            document.getElementById('totalQNum').innerText = randomizedQuestions.length;
+
+            document.getElementById('registrationCard').classList.add('hidden');
+            document.getElementById('quizContainer').classList.remove('hidden');
+
+            startTimer(45 * 60);
+            renderQuestion();
+        }
+
+        function saveSessionProgress(extraData = {}) {
+            if (!currentStudent || !currentStudent.id) return;
+            const cleanId = currentStudent.id.toLowerCase().replace(/[^a-z0-9]/g, '');
+            const sessionKey = 'mpu6122_session_' + cleanId;
+            const dataToSave = {
+                currentStudent: currentStudent,
+                randomizedQuestions: randomizedQuestions,
+                studentAnswers: studentAnswers,
+                tabSwitchCounter: tabSwitchCounter,
+                startTimeMs: currentStudent.startTimeMs || Date.now(),
+                isSubmitted: currentStudent.isSubmitted || false,
+                ...extraData
+            };
+            localStorage.setItem(sessionKey, JSON.stringify(dataToSave));
+        }
+
+        function renderQuestion() {
+            if (!randomizedQuestions.length) return;
+
+            const q = randomizedQuestions[currentQIndex];
+
+            document.getElementById('sectionTitleDisplay').innerText = q.sectionTitle || 'SECTION A';
+            document.getElementById('partInstructionsDisplay').innerText = q.partTitle || '';
+            document.getElementById('currentQNum').innerText = currentQIndex + 1;
+            document.getElementById('questionPrompt').innerText = q.prompt;
+
+            const container = document.getElementById('answerOptionsContainer');
+            container.innerHTML = '';
+
+            const currentVal = studentAnswers[currentQIndex] || '';
+
+            if (q.type === 'mcq') {
+                const opts = q.shuffledOptions || q.options;
+                opts.forEach((optText, idx) => {
+                    const isSelected = currentVal === optText;
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.onclick = () => recordAnswer(optText);
+                    btn.className = `w-full p-4 rounded-xl text-left border text-sm font-medium transition flex items-center justify-between ${
+                        isSelected 
+                            ? 'border-indigo-600 bg-indigo-50 text-indigo-900 shadow-sm font-semibold' 
+                            : 'border-slate-200 bg-white hover:border-slate-300 text-slate-800'
+                    }`;
+
+                    const labelLetters = ['A', 'B', 'C', 'D'];
+                    btn.innerHTML = `
+                        <div class="flex items-center space-x-3">
+                            <span class="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold ${
+                                isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'
+                            }">${labelLetters[idx]}</span>
+                            <span>${optText}</span>
+                        </div>
+                        ${isSelected ? '<i class="fa-solid fa-circle-check text-indigo-600 text-lg"></i>' : ''}
+                    `;
+                    container.appendChild(btn);
+                });
+            } else {
+                const txt = document.createElement('textarea');
+                txt.rows = q.sectionGroup === 'C' ? 3 : 2;
+                txt.placeholder = "Type your answer here...";
+                txt.value = currentVal;
+                txt.className = "w-full p-4 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm transition";
+                txt.oninput = (e) => recordAnswer(e.target.value);
+                container.appendChild(txt);
+            }
+
+            renderDots();
+            updateNavButtons();
+        }
+
+        function renderDots() {
+            const dotsContainer = document.getElementById('questionDotsContainer');
+            if (!dotsContainer) return;
+            dotsContainer.innerHTML = '';
+
+            randomizedQuestions.forEach((_, idx) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.onclick = () => jumpToQuestion(idx);
+
+                const ans = studentAnswers[idx];
+                const isAnswered = ans !== undefined && ans.toString().trim() !== '';
+                const isCurrent = idx === currentQIndex;
+
+                let colorClasses = isAnswered ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white';
+                if (isCurrent) colorClasses += ' ring-2 ring-indigo-900 ring-offset-1 font-bold';
+
+                btn.className = `w-7 h-7 sm:w-8 sm:h-8 rounded-lg text-xs transition flex items-center justify-center font-medium ${colorClasses}`;
+                btn.innerText = idx + 1;
+                dotsContainer.appendChild(btn);
+            });
+        }
+
+        function recordAnswer(val) {
+            studentAnswers[currentQIndex] = val;
+            saveSessionProgress();
+            renderDots();
+            const q = randomizedQuestions[currentQIndex];
+            if (q.type === 'mcq') renderQuestion();
+        }
+
+        function jumpToQuestion(idx) {
+            if (idx >= 0 && idx < randomizedQuestions.length) {
+                currentQIndex = idx;
+                renderQuestion();
+            }
+        }
+
+        function navigateQuestion(step) {
+            const newIndex = currentQIndex + step;
+            if (newIndex >= 0 && newIndex < randomizedQuestions.length) {
+                currentQIndex = newIndex;
+                renderQuestion();
+            }
+        }
+
+        function updateNavButtons() {
+            const btnPrev = document.getElementById('btnPrevQ');
+            const btnNext = document.getElementById('btnNextQ');
+
+            btnPrev.disabled = currentQIndex === 0;
+            btnPrev.classList.toggle('opacity-50', currentQIndex === 0);
+
+            if (currentQIndex === randomizedQuestions.length - 1) {
+                btnNext.innerHTML = '<span>Finish</span> <i class="fa-solid fa-flag-checkered ml-1"></i>';
+            } else {
+                btnNext.innerHTML = '<span>Next</span> <i class="fa-solid fa-chevron-right ml-1"></i>';
+            }
+        }
+
+        function startTimer(initialSeconds) {
+            timeRemainingSeconds = initialSeconds;
+            updateTimerDisplay();
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeRemainingSeconds--;
+                updateTimerDisplay();
+                if (timeRemainingSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    showToast("Time expired! Submitting automatically...", "error");
+                    executeFinalSubmission(true);
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(timeRemainingSeconds / 60);
+            const secs = timeRemainingSeconds % 60;
+            const str = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            const el = document.getElementById('timerDisplay');
+            if (el) el.innerText = str;
+        }
+
+        function openConfirmModal() {
+            document.getElementById('confirmSubmitModal').classList.remove('hidden');
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmSubmitModal').classList.add('hidden');
+        }
+
+        function executeFinalSubmission(isTimeOut = false) {
+            closeConfirmModal();
+            clearInterval(timerInterval);
+
+            if (currentStudent) {
+                currentStudent.isSubmitted = true;
+            }
+
+            let score = 0;
+            const total = randomizedQuestions.length;
+            const detailLogs = [];
+
+            randomizedQuestions.forEach((q, idx) => {
+                const userAns = (studentAnswers[idx] || '').toString().trim();
+                let isCorrect = false;
+
+                if (q.type === 'mcq') {
+                    if (userAns === q.correct) isCorrect = true;
+                } else {
+                    const cleanUser = userAns.toLowerCase().replace(/[^a-z0-9]/g, '');
+                    const matches = q.correct.some(c => cleanUser === c.toLowerCase().replace(/[^a-z0-9]/g, ''));
+                    if (matches) isCorrect = true;
+                }
+
+                if (isCorrect) score++;
+
+                detailLogs.push({
+                    qNum: idx + 1,
+                    prompt: q.prompt,
+                    studentAnswer: userAns || "[Skipped]",
+                    correctAnswer: Array.isArray(q.correct) ? q.correct.join(" OR ") : q.correct,
+                    isCorrect: isCorrect
+                });
+            });
+
+            const percentage = Math.round((score / total) * 100);
+            const submissionRecord = {
+                id: currentStudent.id,
+                name: currentStudent.name,
+                studentId: currentStudent.id,
+                className: currentStudent.className,
+                lecturer: currentStudent.lecturer,
+                score: score,
+                total: total,
+                percentage: percentage,
+                tabSwitches: tabSwitchCounter,
+                submittedAt: new Date().toLocaleString(),
+                detailLogs: detailLogs
+            };
+
+            const allSubmissions = JSON.parse(localStorage.getItem('mpu6122_all_submissions') || '[]');
+            allSubmissions.push(submissionRecord);
+            localStorage.setItem('mpu6122_all_submissions', JSON.stringify(allSubmissions));
+
+            saveSessionProgress({
+                submittedAt: submissionRecord.submittedAt,
+                isSubmitted: true,
+                finalScore: score
+            });
+
+            // Send to Google Sheet Backend safely
+            sendToGoogleSheet(submissionRecord);
+
+            document.getElementById('quizContainer').classList.add('hidden');
+            document.getElementById('submittedCard').classList.remove('hidden');
+            document.getElementById('summaryName').innerText = currentStudent.name;
+            document.getElementById('summaryId').innerText = currentStudent.id;
+            document.getElementById('summaryMeta').innerText = `${currentStudent.className} • ${currentStudent.lecturer}`;
+            document.getElementById('summaryTime').innerText = submissionRecord.submittedAt;
+        }
+
+        /**
+         * Send data to Google Apps Script Web App without CORS preflight failure.
+         */
+        function sendToGoogleSheet(record) {
+            const webhookUrl = localStorage.getItem('mpu6122_sheet_webhook') || DEFAULT_SHEET_WEBHOOK_URL;
+            if (!webhookUrl || webhookUrl.trim() === "") {
+                console.warn("No Google Sheet Webhook URL configured.");
+                return;
+            }
+
+            try {
+                // Post as plain text with no custom headers to avoid CORS preflight (OPTIONS) requests
+                fetch(webhookUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    cache: 'no-cache',
+                    headers: {
+                        'Content-Type': 'text/plain'
+                    },
+                    body: JSON.stringify(record)
+                }).then(() => {
+                    showToast("Data sent to Google Sheet successfully!", "success");
+                }).catch(err => {
+                    console.error("Sheet send error:", err);
+                    showToast("Could not post to Google Sheet. Check your Web App URL.", "error");
+                });
+            } catch (err) {
+                console.error("Transmission error:", err);
+            }
+        }
+
+        function openLecturerAuthModal() {
+            if (isLecturerAuthenticated) {
+                switchView('lecturer');
+            } else {
+                document.getElementById('lecturerPasscode').value = '';
+                document.getElementById('lecturerAuthModal').classList.remove('hidden');
+            }
+        }
+
+        function closeLecturerAuthModal() {
+            document.getElementById('lecturerAuthModal').classList.add('hidden');
+        }
+
+        function verifyLecturerPasscode() {
+            const code = document.getElementById('lecturerPasscode').value.trim();
+            if (code === 'ipg2026') {
+                isLecturerAuthenticated = true;
+                closeLecturerAuthModal();
+                switchView('lecturer');
+                showToast("Lecturer Dashboard unlocked!", "success");
+            } else {
+                showToast("Invalid security passcode.", "error");
+            }
+        }
+
+        function lockDashboard() {
+            isLecturerAuthenticated = false;
+            switchView('student');
+            showToast("Lecturer session locked.", "info");
+        }
+
+        function switchView(view) {
+            if (view === 'lecturer' && !isLecturerAuthenticated) {
+                openLecturerAuthModal();
+                return;
+            }
+
+            const studentSec = document.getElementById('studentPortal');
+            const lecturerSec = document.getElementById('lecturerDashboard');
+
+            if (view === 'student') {
+                studentSec.classList.remove('hidden');
+                lecturerSec.classList.add('hidden');
+                document.getElementById('btnStudentView').className = "px-3 py-1.5 text-xs font-semibold rounded-md bg-indigo-700 text-white shadow";
+                document.getElementById('btnLecturerView').className = "px-3 py-1.5 text-xs font-semibold rounded-md bg-indigo-950 text-indigo-200 hover:bg-indigo-800";
+            } else {
+                studentSec.classList.add('hidden');
+                lecturerSec.classList.remove('hidden');
+                document.getElementById('btnStudentView').className = "px-3 py-1.5 text-xs font-semibold rounded-md bg-indigo-950 text-indigo-200 hover:bg-indigo-800";
+                document.getElementById('btnLecturerView').className = "px-3 py-1.5 text-xs font-semibold rounded-md bg-indigo-700 text-white shadow";
+                renderSubmissionsTable();
+            }
+        }
+
+        function renderSubmissionsTable() {
+            const subs = JSON.parse(localStorage.getItem('mpu6122_all_submissions') || '[]');
+            const filterLect = document.getElementById('filterLecturer').value;
+            const filterCls = document.getElementById('filterClass').value;
+            const filterSrch = document.getElementById('filterSearch').value.toLowerCase().trim();
+
+            const filtered = subs.filter(s => {
+                const matchLect = filterLect === 'ALL' || s.lecturer === filterLect;
+                const matchCls = filterCls === 'ALL' || s.className === filterCls;
+                const matchSrch = !filterSrch || s.name.toLowerCase().includes(filterSrch) || s.studentId.toLowerCase().includes(filterSrch);
+                return matchLect && matchCls && matchSrch;
+            });
+
+            document.getElementById('statTotalSubmissions').innerText = filtered.length;
+            const avg = filtered.length ? Math.round(filtered.reduce((acc, c) => acc + c.percentage, 0) / filtered.length) : 0;
+            document.getElementById('statClassAverage').innerText = avg + '%';
+            document.getElementById('statPassed').innerText = filtered.filter(s => s.percentage >= 50).length;
+            document.getElementById('statTabSwitches').innerText = filtered.reduce((acc, c) => acc + (c.tabSwitches || 0), 0);
+
+            const tbody = document.getElementById('submissionsTbody');
+            tbody.innerHTML = '';
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400">No student submissions recorded for this filter selection yet.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(s => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition";
+                tr.innerHTML = `
+                    <td class="p-4 font-semibold text-slate-900">
+                        ${s.name}
+                        <div class="text-[10px] text-slate-400 font-normal">${s.studentId}</div>
+                    </td>
+                    <td class="p-4"><span class="bg-indigo-50 text-indigo-700 font-bold px-2 py-1 rounded-md text-[11px]">${s.className}</span></td>
+                    <td class="p-4 text-slate-600">${s.lecturer}</td>
+                    <td class="p-4 font-bold ${s.percentage >= 50 ? 'text-emerald-600' : 'text-rose-600'}">
+                        ${s.score}/${s.total} (${s.percentage}%)
+                    </td>
+                    <td class="p-4">
+                        ${s.tabSwitches > 0 ? `<span class="bg-rose-100 text-rose-700 font-bold px-2 py-0.5 rounded text-[10px]"><i class="fa-solid fa-triangle-exclamation mr-1"></i>${s.tabSwitches}x</span>` : '<span class="text-slate-400">0</span>'}
+                    </td>
+                    <td class="p-4 text-slate-500 text-[11px]">${s.submittedAt}</td>
+                    <td class="p-4 text-center">
+                        <button onclick="viewStudentLog('${s.studentId}')" class="px-3 py-1 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 font-semibold rounded-md text-[11px] transition">
+                            <i class="fa-solid fa-eye mr-1"></i> View Log
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function viewStudentLog(studentId) {
+            const subs = JSON.parse(localStorage.getItem('mpu6122_all_submissions') || '[]');
+            const student = subs.find(s => s.studentId === studentId);
+            if (!student) return;
+
+            document.getElementById('logModalStudentName').innerText = `${student.name} (${student.studentId})`;
+            document.getElementById('logModalStudentMeta').innerText = `Class: ${student.className} • Lecturer: ${student.lecturer} • Score: ${student.score}/${student.total} (${student.percentage}%) • Tab Switches: ${student.tabSwitches}x`;
+
+            const container = document.getElementById('logModalContent');
+            container.innerHTML = '';
+
+            (student.detailLogs || []).forEach(item => {
+                const card = document.createElement('div');
+                card.className = `p-3 rounded-lg border ${item.isCorrect ? 'bg-emerald-50/50 border-emerald-200' : 'bg-rose-50/50 border-rose-200'}`;
+                card.innerHTML = `
+                    <div class="flex justify-between font-semibold mb-1">
+                        <span class="text-slate-800">${item.prompt}</span>
+                        <span class="${item.isCorrect ? 'text-emerald-700 font-bold' : 'text-rose-700 font-bold'}">
+                            ${item.isCorrect ? '[CORRECT]' : '[INCORRECT]'}
+                        </span>
+                    </div>
+                    <div class="space-y-0.5 text-slate-600">
+                        <div><strong>Student's Answer:</strong> "${item.studentAnswer}"</div>
+                        <div><strong>Correct Answer Key:</strong> "${item.correctAnswer}"</div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            document.getElementById('studentLogModal').classList.remove('hidden');
+        }
+
+        function closeLogModal() {
+            document.getElementById('studentLogModal').classList.add('hidden');
+        }
+
+        function exportToCSV() {
+            const subs = JSON.parse(localStorage.getItem('mpu6122_all_submissions') || '[]');
+            if (!subs.length) {
+                showToast("No submissions to export.", "error");
+                return;
+            }
+
+            let csv = "Student Name,Matric ID,Class,Lecturer,Score,Total,Percentage,Tab Switches,Submitted At\n";
+            subs.forEach(s => {
+                csv += `"${s.name}","${s.studentId}","${s.className}","${s.lecturer}",${s.score},${s.total},${s.percentage}%,${s.tabSwitches},"${s.submittedAt}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `MPU6122_Grammar_Test_Results_${new Date().toISOString().slice(0,10)}.csv`;
+            a.click();
+            showToast("CSV file exported successfully!", "success");
+        }
+
+        function openSettingsModal() {
+            document.getElementById('sheetWebhookUrl').value = localStorage.getItem('mpu6122_sheet_webhook') || DEFAULT_SHEET_WEBHOOK_URL;
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').classList.add('hidden');
+        }
+
+        function saveSettings() {
+            const url = document.getElementById('sheetWebhookUrl').value.trim();
+            localStorage.setItem('mpu6122_sheet_webhook', url);
+            closeSettingsModal();
+            showToast("Google Sheet Webhook saved!", "success");
+        }
+
+        function showToast(message, type = "info") {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            let colors = "bg-slate-900 text-white";
+            if (type === "success") colors = "bg-emerald-600 text-white shadow-emerald-200";
+            if (type === "error") colors = "bg-rose-600 text-white shadow-rose-200";
+
+            toast.className = `pointer-events-auto px-4 py-3 rounded-xl shadow-lg font-medium text-xs flex items-center space-x-2 transition transform duration-300 ${colors}`;
+            toast.innerHTML = `<span>${message}</span>`;
+
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+    </script>
+</body>
+</html>

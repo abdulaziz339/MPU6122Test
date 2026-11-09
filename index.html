@@ -216,6 +216,9 @@
                 </div>
 
                 <div class="flex items-center space-x-2">
+                    <button onclick="fetchSubmissionsFromSheet()" class="px-3 py-2 bg-indigo-600 text-white font-semibold text-xs rounded-lg hover:bg-indigo-700 shadow transition">
+                        <i class="fa-solid fa-rotate mr-1"></i> Sync Live Data
+                    </button>
                     <button onclick="openSettingsModal()" class="px-3 py-2 bg-slate-100 text-slate-700 font-semibold text-xs rounded-lg hover:bg-slate-200 transition">
                         <i class="fa-solid fa-link mr-1"></i> Google Sheet Link
                     </button>
@@ -362,7 +365,6 @@
 
     <!-- MAIN JAVASCRIPT ENGINE -->
     <script>
-        // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE SO ALL PHONES CAN SUBMIT AUTOMATICALLY
         const DEFAULT_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwZEY0yw8wQo-KVBnkpFjTUt7dGZ2uycIh5VtUS2lvurwJ7G8DVjy7f2xYVh_HQ5Lmi/exec";
 
         const questionBank = [
@@ -417,12 +419,10 @@
         let timeRemainingSeconds = 45 * 60;
         let tabSwitchCounter = 0;
         let isLecturerAuthenticated = false;
+        let syncedSubmissionsList = [];
 
         window.onload = function() {
             setupTabSwitchListener();
-            if (window.location.protocol === 'file:') {
-                console.warn("Running from file:// protocol. Push to GitHub Pages or use a local HTTP server for Google Sheet integration.");
-            }
         };
 
         function shuffleArray(arr) {
@@ -501,11 +501,9 @@
                     document.getElementById('totalQNum').innerText = randomizedQuestions.length;
 
                     const warningBanner = document.getElementById('tabWarningBanner');
-                    if (warningBanner) {
-                        if (tabSwitchCounter > 0) {
-                            warningBanner.classList.remove('hidden');
-                            document.getElementById('tabSwitchCount').innerText = tabSwitchCounter;
-                        }
+                    if (warningBanner && tabSwitchCounter > 0) {
+                        warningBanner.classList.remove('hidden');
+                        document.getElementById('tabSwitchCount').innerText = tabSwitchCounter;
                     }
 
                     document.getElementById('registrationCard').classList.add('hidden');
@@ -791,7 +789,6 @@
                 finalScore: score
             });
 
-            // Send to Google Sheet Backend safely
             sendToGoogleSheet(submissionRecord);
 
             document.getElementById('quizContainer').classList.add('hidden');
@@ -802,35 +799,52 @@
             document.getElementById('summaryTime').innerText = submissionRecord.submittedAt;
         }
 
-        /**
-         * Send data to Google Apps Script Web App without CORS preflight failure.
-         */
         function sendToGoogleSheet(record) {
             const webhookUrl = localStorage.getItem('mpu6122_sheet_webhook') || DEFAULT_SHEET_WEBHOOK_URL;
-            if (!webhookUrl || webhookUrl.trim() === "") {
-                console.warn("No Google Sheet Webhook URL configured.");
-                return;
-            }
+            if (!webhookUrl || webhookUrl.trim() === "") return;
 
             try {
-                // Post as plain text with no custom headers to avoid CORS preflight (OPTIONS) requests
                 fetch(webhookUrl, {
                     method: 'POST',
                     mode: 'no-cors',
                     cache: 'no-cache',
-                    headers: {
-                        'Content-Type': 'text/plain'
-                    },
+                    headers: { 'Content-Type': 'text/plain' },
                     body: JSON.stringify(record)
                 }).then(() => {
-                    showToast("Data sent to Google Sheet successfully!", "success");
+                    showToast("Data sent to Google Sheet!", "success");
                 }).catch(err => {
                     console.error("Sheet send error:", err);
-                    showToast("Could not post to Google Sheet. Check your Web App URL.", "error");
                 });
             } catch (err) {
                 console.error("Transmission error:", err);
             }
+        }
+
+        /**
+         * FETCH SUBMISSIONS LIVE FROM GOOGLE SHEET DATABASE
+         */
+        function fetchSubmissionsFromSheet() {
+            const webhookUrl = localStorage.getItem('mpu6122_sheet_webhook') || DEFAULT_SHEET_WEBHOOK_URL;
+            if (!webhookUrl) {
+                showToast("No Google Sheet Webhook connected.", "error");
+                return;
+            }
+
+            showToast("Syncing latest live submissions...", "info");
+
+            fetch(webhookUrl)
+                .then(res => res.json())
+                .then(resData => {
+                    if (resData.status === 'success' && Array.isArray(resData.data)) {
+                        syncedSubmissionsList = resData.data;
+                        renderSubmissionsTable();
+                        showToast(`Synced ${syncedSubmissionsList.length} submissions from Google Sheet!`, "success");
+                    }
+                })
+                .catch(err => {
+                    console.error("Sync error:", err);
+                    showToast("Could not sync live data. Showing local records.", "error");
+                });
         }
 
         function openLecturerAuthModal() {
@@ -883,12 +897,17 @@
                 lecturerSec.classList.remove('hidden');
                 document.getElementById('btnStudentView').className = "px-3 py-1.5 text-xs font-semibold rounded-md bg-indigo-950 text-indigo-200 hover:bg-indigo-800";
                 document.getElementById('btnLecturerView').className = "px-3 py-1.5 text-xs font-semibold rounded-md bg-indigo-700 text-white shadow";
-                renderSubmissionsTable();
+                
+                // Trigger Live Sync from Google Sheets
+                fetchSubmissionsFromSheet();
             }
         }
 
         function renderSubmissionsTable() {
-            const subs = JSON.parse(localStorage.getItem('mpu6122_all_submissions') || '[]');
+            const localSubs = JSON.parse(localStorage.getItem('mpu6122_all_submissions') || '[]');
+            // Prefer synced sheet data if available, otherwise fall back to local browser storage
+            const subs = syncedSubmissionsList.length ? syncedSubmissionsList : localSubs;
+
             const filterLect = document.getElementById('filterLecturer').value;
             const filterCls = document.getElementById('filterClass').value;
             const filterSrch = document.getElementById('filterSearch').value.toLowerCase().trim();
@@ -896,14 +915,14 @@
             const filtered = subs.filter(s => {
                 const matchLect = filterLect === 'ALL' || s.lecturer === filterLect;
                 const matchCls = filterCls === 'ALL' || s.className === filterCls;
-                const matchSrch = !filterSrch || s.name.toLowerCase().includes(filterSrch) || s.studentId.toLowerCase().includes(filterSrch);
+                const matchSrch = !filterSrch || (s.name && s.name.toLowerCase().includes(filterSrch)) || (s.studentId && s.studentId.toLowerCase().includes(filterSrch));
                 return matchLect && matchCls && matchSrch;
             });
 
             document.getElementById('statTotalSubmissions').innerText = filtered.length;
-            const avg = filtered.length ? Math.round(filtered.reduce((acc, c) => acc + c.percentage, 0) / filtered.length) : 0;
+            const avg = filtered.length ? Math.round(filtered.reduce((acc, c) => acc + (c.percentage || 0), 0) / filtered.length) : 0;
             document.getElementById('statClassAverage').innerText = avg + '%';
-            document.getElementById('statPassed').innerText = filtered.filter(s => s.percentage >= 50).length;
+            document.getElementById('statPassed').innerText = filtered.filter(s => (s.percentage || 0) >= 50).length;
             document.getElementById('statTabSwitches').innerText = filtered.reduce((acc, c) => acc + (c.tabSwitches || 0), 0);
 
             const tbody = document.getElementById('submissionsTbody');
@@ -942,8 +961,9 @@
         }
 
         function viewStudentLog(studentId) {
-            const subs = JSON.parse(localStorage.getItem('mpu6122_all_submissions') || '[]');
-            const student = subs.find(s => s.studentId === studentId);
+            const localSubs = JSON.parse(localStorage.getItem('mpu6122_all_submissions') || '[]');
+            const subs = syncedSubmissionsList.length ? syncedSubmissionsList : localSubs;
+            const student = subs.find(s => String(s.studentId).trim() === String(studentId).trim());
             if (!student) return;
 
             document.getElementById('logModalStudentName').innerText = `${student.name} (${student.studentId})`;
@@ -952,23 +972,30 @@
             const container = document.getElementById('logModalContent');
             container.innerHTML = '';
 
-            (student.detailLogs || []).forEach(item => {
-                const card = document.createElement('div');
-                card.className = `p-3 rounded-lg border ${item.isCorrect ? 'bg-emerald-50/50 border-emerald-200' : 'bg-rose-50/50 border-rose-200'}`;
-                card.innerHTML = `
-                    <div class="flex justify-between font-semibold mb-1">
-                        <span class="text-slate-800">${item.prompt}</span>
-                        <span class="${item.isCorrect ? 'text-emerald-700 font-bold' : 'text-rose-700 font-bold'}">
-                            ${item.isCorrect ? '[CORRECT]' : '[INCORRECT]'}
-                        </span>
-                    </div>
-                    <div class="space-y-0.5 text-slate-600">
-                        <div><strong>Student's Answer:</strong> "${item.studentAnswer}"</div>
-                        <div><strong>Correct Answer Key:</strong> "${item.correctAnswer}"</div>
-                    </div>
-                `;
+            if (student.detailLogs && Array.isArray(student.detailLogs)) {
+                student.detailLogs.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = `p-3 rounded-lg border ${item.isCorrect ? 'bg-emerald-50/50 border-emerald-200' : 'bg-rose-50/50 border-rose-200'}`;
+                    card.innerHTML = `
+                        <div class="flex justify-between font-semibold mb-1">
+                            <span class="text-slate-800">${item.prompt}</span>
+                            <span class="${item.isCorrect ? 'text-emerald-700 font-bold' : 'text-rose-700 font-bold'}">
+                                ${item.isCorrect ? '[CORRECT]' : '[INCORRECT]'}
+                            </span>
+                        </div>
+                        <div class="space-y-0.5 text-slate-600">
+                            <div><strong>Student's Answer:</strong> "${item.studentAnswer}"</div>
+                            <div><strong>Correct Answer Key:</strong> "${item.correctAnswer}"</div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } else if (student.detailLogsText) {
+                const card = document.createElement('pre');
+                card.className = "p-3 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-700 whitespace-pre-wrap font-mono";
+                card.innerText = student.detailLogsText;
                 container.appendChild(card);
-            });
+            }
 
             document.getElementById('studentLogModal').classList.remove('hidden');
         }
@@ -978,7 +1005,8 @@
         }
 
         function exportToCSV() {
-            const subs = JSON.parse(localStorage.getItem('mpu6122_all_submissions') || '[]');
+            const localSubs = JSON.parse(localStorage.getItem('mpu6122_all_submissions') || '[]');
+            const subs = syncedSubmissionsList.length ? syncedSubmissionsList : localSubs;
             if (!subs.length) {
                 showToast("No submissions to export.", "error");
                 return;
